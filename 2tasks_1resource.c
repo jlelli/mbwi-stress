@@ -95,13 +95,15 @@ void *t_1(void *thread_params) {
 	signal(SIGINT, sighandler);
 	signal(SIGQUIT, sighandler);
 
-	//CPU_ZERO(&mask);
-	//CPU_SET(0, &mask);
-	//retval = sched_setaffinity(0, sizeof(mask), &mask);
-	//if (retval) {
-	//	fprintf(stderr, "WARNING: could not set task affinity\n");
-	//	exit(-1);
-	//}
+#ifdef SMP
+	CPU_ZERO(&mask);
+	CPU_SET(1, &mask);
+	retval = sched_setaffinity(0, sizeof(mask), &mask);
+	if (retval) {
+		fprintf(stderr, "WARNING: could not set task affinity\n");
+		exit(-1);
+	}
+#endif
 	
 	t1_pid = tid;
 	pthread_cond_wait(&t1_convar, &t1_mutex);
@@ -158,13 +160,15 @@ void *t_2(void *thread_params) {
 	signal(SIGINT, sighandler);
 	signal(SIGQUIT, sighandler);
 
-	//CPU_ZERO(&mask);
-	//CPU_SET(0, &mask);
-	//retval = sched_setaffinity(0, sizeof(mask), &mask);
-	//if (retval) {
-	//	fprintf(stderr, "WARNING: could not set task affinity\n");
-	//	exit(-1);
-	//}
+#ifdef SMP
+	CPU_ZERO(&mask);
+	CPU_SET(1, &mask);
+	retval = sched_setaffinity(0, sizeof(mask), &mask);
+	if (retval) {
+		fprintf(stderr, "WARNING: could not set task affinity\n");
+		exit(-1);
+	}
+#endif
 
 	t2_pid = tid;
 	pthread_cond_wait(&t2_convar, &t2_mutex);
@@ -216,13 +220,15 @@ void *t_3(void *thread_params) {
 	signal(SIGINT, sighandler);
 	signal(SIGQUIT, sighandler);
 
-	//CPU_ZERO(&mask);
-	//CPU_SET(0, &mask);
-	//retval = sched_setaffinity(0, sizeof(mask), &mask);
-	//if (retval) {
-	//	fprintf(stderr, "WARNING: could not set task affinity\n");
-	//	exit(-1);
-	//}
+#ifdef SMP
+	CPU_ZERO(&mask);
+	CPU_SET(0, &mask);
+	retval = sched_setaffinity(0, sizeof(mask), &mask);
+	if (retval) {
+		fprintf(stderr, "WARNING: could not set task affinity\n");
+		exit(-1);
+	}
+#endif
 
 	t3_pid = tid;
 	pthread_cond_wait(&t3_convar, &t3_mutex);

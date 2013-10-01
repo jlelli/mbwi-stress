@@ -85,13 +85,13 @@ void *t_1(void *thread_params) {
 	signal(SIGINT, sighandler);
 	signal(SIGQUIT, sighandler);
 
-	//CPU_ZERO(&mask);
-	//CPU_SET(0, &mask);
-	//retval = sched_setaffinity(0, sizeof(mask), &mask);
-	//if (retval) {
-	//	fprintf(stderr, "WARNING: could not set task affinity\n");
-	//	exit(-1);
-	//}
+	CPU_ZERO(&mask);
+	CPU_SET(0, &mask);
+	retval = sched_setaffinity(0, sizeof(mask), &mask);
+	if (retval) {
+		fprintf(stderr, "WARNING: could not set task affinity\n");
+		exit(-1);
+	}
 
 	memset(&dl_params, 0, sizeof(dl_params));
 	dl_params.sched_priority = 0;
@@ -162,13 +162,13 @@ void *t_2(void *thread_params) {
 	signal(SIGINT, sighandler);
 	signal(SIGQUIT, sighandler);
 
-	//CPU_ZERO(&mask);
-	//CPU_SET(0, &mask);
-	//retval = sched_setaffinity(0, sizeof(mask), &mask);
-	//if (retval) {
-	//	fprintf(stderr, "WARNING: could not set task affinity\n");
-	//	exit(-1);
-	//}
+	CPU_ZERO(&mask);
+	CPU_SET(1, &mask);
+	retval = sched_setaffinity(0, sizeof(mask), &mask);
+	if (retval) {
+		fprintf(stderr, "WARNING: could not set task affinity\n");
+		exit(-1);
+	}
 
 	memset(&dl_params, 0, sizeof(dl_params));
 	dl_params.sched_priority = 0;
