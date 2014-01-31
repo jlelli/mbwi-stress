@@ -75,7 +75,7 @@ void *t_1(void *thread_params) {
 	 */
 	run1 = 8U * NSEC_PER_MSEC;
 	crit = 12U * NSEC_PER_MSEC;
-	runtime =  run1 + crit - (4U * NSEC_PER_MSEC);
+	runtime =  run1 + crit + (8U * NSEC_PER_MSEC);
 	deadline = 40U * NSEC_PER_MSEC;
 	period = deadline;
 	t_period = nsec_to_timespec(&period);
@@ -153,7 +153,7 @@ void *t_2(void *thread_params) {
 	 */
 	run1 = 4U * NSEC_PER_MSEC;
 	crit = 12U * NSEC_PER_MSEC;
-	runtime =  run1 + crit + (8 * NSEC_PER_MSEC);
+	runtime =  run1 + crit - (8U * NSEC_PER_MSEC);
 	deadline = 48U * NSEC_PER_MSEC;
 	period = deadline;
 	t_period = nsec_to_timespec(&period);

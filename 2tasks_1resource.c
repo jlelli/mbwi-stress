@@ -97,7 +97,7 @@ void *t_1(void *thread_params) {
 
 #ifdef SMP
 	CPU_ZERO(&mask);
-	CPU_SET(1, &mask);
+	CPU_SET(0, &mask);
 	retval = sched_setaffinity(0, sizeof(mask), &mask);
 	if (retval) {
 		fprintf(stderr, "WARNING: could not set task affinity\n");
@@ -114,13 +114,16 @@ void *t_1(void *thread_params) {
 		ftrace_write(marker_fd, "[t_1] run starts\n");
 		clock_gettime(CLOCK_MONOTONIC, &t_start);
 		ftrace_write(marker_fd, "[t_1] locks mutex\n");
+		printf("[t_1] locks mutex\n");
 		pthread_mutex_lock(&my_mutex);
 		ftrace_write(marker_fd, "[t_1] exec for %lluns\n", crit);
+		printf("[t_1] exec for %lluns\n", crit);
 		//clock_gettime(CLOCK_THREAD_CPUTIME_ID, &t_now);
 		//t_exec = timespec_add(&t_now, &t_crit);
 		//busywait(&t_exec);
 		busywait(crit);
 		ftrace_write(marker_fd, "[t_1] unlocks mutex\n");
+		printf("[t_1] unlocks mutex\n");
 		pthread_mutex_unlock(&my_mutex);
 		clock_gettime(CLOCK_MONOTONIC, &t_stop);
 		t_next = timespec_add(&t_next, &t_period);
@@ -179,6 +182,7 @@ void *t_2(void *thread_params) {
 		ftrace_write(marker_fd, "[t_2] run starts\n");
 		clock_gettime(CLOCK_MONOTONIC, &t_start);
 		ftrace_write(marker_fd, "[t_2] exec for %lluns\n", run1);
+		printf("[t_2] exec for %lluns\n", run1);
 		busywait(run1);
 		clock_gettime(CLOCK_MONOTONIC, &t_stop);
 		t_next = timespec_add(&t_next, &t_period);
@@ -222,7 +226,7 @@ void *t_3(void *thread_params) {
 
 #ifdef SMP
 	CPU_ZERO(&mask);
-	CPU_SET(0, &mask);
+	CPU_SET(1, &mask);
 	retval = sched_setaffinity(0, sizeof(mask), &mask);
 	if (retval) {
 		fprintf(stderr, "WARNING: could not set task affinity\n");
@@ -239,12 +243,16 @@ void *t_3(void *thread_params) {
 		ftrace_write(marker_fd, "[t_3] run starts\n");
 		clock_gettime(CLOCK_MONOTONIC, &t_start);
 		ftrace_write(marker_fd, "[t_3] exec for %lluns\n", run1);
+		printf("[t_3] exec for %lluns\n", run1);
 		busywait(run1);
 		ftrace_write(marker_fd, "[t_3] locks mutex\n");
+		printf("[t_3] locks mutex\n");
 		pthread_mutex_lock(&my_mutex);
 		ftrace_write(marker_fd, "[t_3] exec for %lluns\n", crit);
+		printf("[t_3] exec for %lluns\n", crit);
 		busywait(crit);
 		ftrace_write(marker_fd, "[t_3] unlocks mutex\n");
+		printf("[t_3] unlocks mutex\n");
 		pthread_mutex_unlock(&my_mutex);
 		clock_gettime(CLOCK_MONOTONIC, &t_stop);
 		t_next = timespec_add(&t_next, &t_period);

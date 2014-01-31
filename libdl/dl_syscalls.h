@@ -25,21 +25,18 @@
 
 /* XXX use the proper syscall numbers */
 #ifdef __x86_64__
-#define __NR_sched_setparam2		314
-#define __NR_sched_getparam2		315
-#define __NR_sched_setscheduler2	316
+#define __NR_sched_setattr		314
+#define __NR_sched_getattr		315
 #endif
 
 #ifdef __i386__
-#define __NR_sched_setparam2		351
-#define __NR_sched_getparam2		352
-#define __NR_sched_setscheduler2	353
+#define __NR_sched_setattr		351
+#define __NR_sched_getattr		352
 #endif
 
 #ifdef __arm__
-#define __NR_sched_setscheduler2	380
-#define __NR_sched_setparam2		381
-#define __NR_sched_getparam2		382
+#define __NR_sched_setattr		380
+#define __NR_sched_getattr		381
 #endif
 
 #define SF_SIG_RORUN		2
@@ -51,23 +48,28 @@
 #define RLIMIT_DLDLINE		16
 #define RLIMIT_DLRTIME		17
 
-struct sched_param2 {
-	int sched_priority;
-	unsigned int sched_flags;
+struct sched_attr {
+	__u32 size;
+	
+	__u32 sched_policy;
+	__u64 sched_flags;
+	
+	/* SCHED_NORMAL, SCHED_BATCH */
+	__s32 sched_nice;
+	
+	/* SCHED_FIFO, SCHED_RR */
+	__u32 sched_priority;
+	
+	/* SCHED_DEADLINE */
 	__u64 sched_runtime;
 	__u64 sched_deadline;
 	__u64 sched_period;
-
-	__u64 __unused[12];
 };
 
-int sched_setscheduler2(pid_t pid, int policy,
-			  const struct sched_param2 *param);
+int sched_setattr(pid_t pid,
+		      const struct sched_attr *attr);
 
-int sched_setparam2(pid_t pid,
-		      const struct sched_param2 *param);
-
-int sched_getparam2(pid_t pid, struct sched_param2 *param);
+int sched_getattr(pid_t pid, struct sched_attr *attr);
 
 #endif /* __DL_SYSCALLS__ */
 
