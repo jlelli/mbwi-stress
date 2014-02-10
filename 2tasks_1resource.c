@@ -74,7 +74,7 @@ static inline busywait(__u64 len)
 }
 
 void *t_1(void *thread_params) {
-	struct sched_param2 dl_params;
+	struct sched_attr attr;
 	struct timespec t_next, t_period, t_start, t_stop, ran_for,
 			t_wait, t_now, t_crit, t_exec;
 	long tid = gettid();
@@ -136,16 +136,16 @@ void *t_1(void *thread_params) {
 		clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &t_next, NULL);
 	}
 
-	retval = sched_setscheduler2(0, SCHED_OTHER, &dl_params);
+	/*retval = sched_setscheduler2(0, SCHED_OTHER, &dl_params);
 	if (retval) {
 		fprintf(stderr, "WARNING: could not set SCHED_OTHER"
 				"policy!\n");
 		exit(-1);
-	}
+	}*/
 }
 
 void *t_2(void *thread_params) {
-	struct sched_param2 dl_params;
+	struct sched_attr attr;
 	struct timespec t_next, t_period, t_start, t_stop, ran_for, t_wait;
 	long tid = gettid();
 	int retval, i;
@@ -195,16 +195,16 @@ void *t_2(void *thread_params) {
 		clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &t_next, NULL);
 	}
 
-	retval = sched_setscheduler2(0, SCHED_OTHER, &dl_params);
+	/*retval = sched_setscheduler2(0, SCHED_OTHER, &dl_params);
 	if (retval) {
 		fprintf(stderr, "WARNING: could not set SCHED_OTHER"
 				"policy!\n");
 		exit(-1);
-	}
+	}*/
 }
 
 void *t_3(void *thread_params) {
-	struct sched_param2 dl_params;
+	struct sched_attr attr;
 	struct timespec t_next, t_period, t_start, t_stop, ran_for, t_wait;
 	long tid = gettid();
 	int retval, i;
@@ -265,16 +265,16 @@ void *t_3(void *thread_params) {
 		clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &t_next, NULL);
 	}
 
-	retval = sched_setscheduler2(0, SCHED_OTHER, &dl_params);
+	/*retval = sched_setscheduler2(0, SCHED_OTHER, &dl_params);
 	if (retval) {
 		fprintf(stderr, "WARNING: could not set SCHED_OTHER"
 				"policy!\n");
 		exit(-1);
-	}
+	}*/
 }
 
 int main(int argc, char **argv) {
-	struct sched_param2 dl_params;
+	struct sched_attr attr;
 	int i, retval;
 	pthread_t thread[MAX_THREADS];
 	char *debugfs = "/debug";
@@ -337,15 +337,17 @@ int main(int argc, char **argv) {
 
 	sleep(1);
 
-	memset(&dl_params, 0, sizeof(dl_params));
-	dl_params.sched_priority = 0;
-	dl_params.sched_runtime = runtime;
-	dl_params.sched_deadline = deadline;
-	dl_params.sched_period = period;
+	memset(&attr, 0, sizeof(attr));
+	attr.size = sizeof(attr);
+	attr.sched_priority = 0;
+	attr.sched_runtime = runtime;
+	attr.sched_deadline = deadline;
+	attr.sched_period = period;
+	attr.sched_policy = SCHED_DEADLINE;
 	printf("[main]: setting rt=%llums dl=%llums\n",
 	       runtime/NSEC_PER_MSEC,
 	       deadline/NSEC_PER_MSEC);
-	retval = sched_setscheduler2(0, SCHED_DEADLINE, &dl_params);
+	retval = sched_setattr(0, &attr);
 	if (retval) {
 		fprintf(stderr, "WARNING: could not set SCHED_DEADLINE"
 				" policy!\n");
@@ -362,15 +364,17 @@ int main(int argc, char **argv) {
 	deadline = 72U * NSEC_PER_MSEC;
 	period = deadline;
 
-	memset(&dl_params, 0, sizeof(dl_params));
-	dl_params.sched_priority = 0;
-	dl_params.sched_runtime = runtime;
-	dl_params.sched_deadline = deadline;
-	dl_params.sched_period = period;
-	printf("[thread %ld (t_3)]: setting rt=%llums dl=%llums\n", tid,
+	memset(&attr, 0, sizeof(attr));
+	attr.size = sizeof(attr);
+	attr.sched_priority = 0;
+	attr.sched_runtime = runtime;
+	attr.sched_deadline = deadline;
+	attr.sched_period = period;
+	attr.sched_policy = SCHED_DEADLINE;
+	printf("[main]: setting rt=%llums dl=%llums\n",
 	       runtime/NSEC_PER_MSEC,
 	       deadline/NSEC_PER_MSEC);
-	retval = sched_setscheduler2(t3_pid, SCHED_DEADLINE, &dl_params);
+	retval = sched_setattr(t3_pid, &attr);
 	if (retval) {
 		fprintf(stderr, "WARNING: could not set SCHED_DEADLINE"
 				" policy!\n");
@@ -393,15 +397,17 @@ int main(int argc, char **argv) {
 	deadline = 24U * NSEC_PER_MSEC;
 	period = deadline;
 
-	memset(&dl_params, 0, sizeof(dl_params));
-	dl_params.sched_priority = 0;
-	dl_params.sched_runtime = runtime;
-	dl_params.sched_deadline = deadline;
-	dl_params.sched_period = period;
-	printf("[thread %ld (t_1)]: setting rt=%llums dl=%llums\n", tid,
+	memset(&attr, 0, sizeof(attr));
+	attr.size = sizeof(attr);
+	attr.sched_priority = 0;
+	attr.sched_runtime = runtime;
+	attr.sched_deadline = deadline;
+	attr.sched_period = period;
+	attr.sched_policy = SCHED_DEADLINE;
+	printf("[main]: setting rt=%llums dl=%llums\n",
 	       runtime/NSEC_PER_MSEC,
 	       deadline/NSEC_PER_MSEC);
-	retval = sched_setscheduler2(t1_pid, SCHED_DEADLINE, &dl_params);
+	retval = sched_setattr(t1_pid, &attr);
 	if (retval) {
 		fprintf(stderr, "WARNING: could not set SCHED_DEADLINE"
 				" policy!\n");
@@ -423,15 +429,17 @@ int main(int argc, char **argv) {
 	deadline = 24U * NSEC_PER_MSEC;
 	period = deadline;
 
-	memset(&dl_params, 0, sizeof(dl_params));
-	dl_params.sched_priority = 0;
-	dl_params.sched_runtime = runtime;
-	dl_params.sched_deadline = deadline;
-	dl_params.sched_period = period;
-	printf("[thread %ld (t_2)]: setting rt=%llums dl=%llums\n", tid,
+	memset(&attr, 0, sizeof(attr));
+	attr.size = sizeof(attr);
+	attr.sched_priority = 0;
+	attr.sched_runtime = runtime;
+	attr.sched_deadline = deadline;
+	attr.sched_period = period;
+	attr.sched_policy = SCHED_DEADLINE;
+	printf("[main]: setting rt=%llums dl=%llums\n",
 	       runtime/NSEC_PER_MSEC,
 	       deadline/NSEC_PER_MSEC);
-	retval = sched_setscheduler2(t2_pid, SCHED_DEADLINE, &dl_params);
+	retval = sched_setattr(t2_pid, &attr);
 	if (retval) {
 		fprintf(stderr, "WARNING: could not set SCHED_DEADLINE"
 				" policy!\n");
